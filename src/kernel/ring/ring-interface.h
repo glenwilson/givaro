@@ -84,7 +84,6 @@ struct FieldInterface : public RingInterface<_Element>
 	virtual _Element& invin(_Element& r) const = 0;
 }; // class FieldInterface
 
-
 template<class _Element>
 struct FiniteInterface
 {
@@ -99,7 +98,22 @@ struct FiniteInterface
 
 };
 
+  template<class _Element>
+  struct DVRInterface : public RingInterface<_Element>
+  {
+    //What is the prescribed behavior of these division functions?
+    //Throw error if not allowed, or just allow undefined behavior if
+    //used improperly?  User MUST check or be certaion that an element
+    //is a unit before attempting to divide by it, this is clear.
+    virtual _Element& div(_Element& r, const _Element& a, const _Element& b) const = 0;
+    virtual _Element& inv(_Element& r, const _Element& a) const = 0;
+    virtual _Element& divin(_Element& r, const _Element& a) const = 0;
+    virtual _Element& invin(_Element& r) const = 0;
+    virtual int64_t& valuation(int64_t& n, const _Element& a) const = 0;
+    virtual _Element& unit_factor (_Element& u, const _Element& a) const = 0;
+    virtual _Element& uniformizer_factor (_Element& q, const _Element& a) const = 0;
 
+  };
 
 template<class _Element>
 struct FiniteFieldInterface : public FieldInterface<_Element>, public FiniteInterface<_Element> {
@@ -110,6 +124,7 @@ template<class _Element>
 struct FiniteRingInterface : public  RingInterface<_Element>, public  FiniteInterface<_Element> {
 //	virtual ~FiniteRingInterface() = default;
 };
+
 
 
 } // namespace Givaro

@@ -45,6 +45,11 @@ pkginclude_HEADERS=     \
 	montgomery-ruint.inl\
 	ring-interface.h        \
 	modular-extended.h	\
-	modular-extended.inl
+	modular-extended.inl 	\
+	plocal-general.h	\
+	plocal-general.inl	\
+	plocal-implem.h		\
+	plocal-rational.h	\
+	plocal-rational.inl
 
 EXTRA_DIST=ring.doxy

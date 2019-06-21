@@ -51,7 +51,7 @@ namespace Givaro
         // ----- Initialisation
         Element& init (Element& x) const override;
 
-		Element& init(Element& r, const Integer& a) const override
+	Element& init(Element& r, const Integer& a) const override
         { r = Caster<Element>(a); return reduce(r); }
         template<typename T> Element& init(Element& r, const T& a) const
         { r = Caster<Element>(a); return reduce(r); }
