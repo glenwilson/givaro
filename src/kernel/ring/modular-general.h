@@ -26,13 +26,29 @@ namespace Givaro
     template<typename Storage_t>
     inline Storage_t& gcdext(Storage_t& d,  Storage_t& u, Storage_t& v, const Storage_t a, const Storage_t b);
 
-    //! Generalized inversion used by specialized Modular.
-    template<typename Storage_t , typename Compute_t>
-    inline Storage_t& invext(Storage_t& u, const Storage_t a, const Storage_t b);
+    //! Extended Euclidean algorithm computing only the  Bezout coefficient for a
+    //  2 different versions, for floating or not floating point elements
+    //  both require a different forward declaration with std::enable_if
+    template<typename Storage_t>
+    inline typename std::enable_if<std::is_floating_point<Storage_t>::value, Storage_t&>::type
+    extended_euclid (Storage_t& x, Storage_t& d, const Storage_t a, const Storage_t b);
+
+    template<typename Storage_t>
+    inline typename std::enable_if<!std::is_floating_point<Storage_t>::value, Storage_t&>::type
+    extended_euclid (Storage_t& x, Storage_t& d, const Storage_t a, const Storage_t b);
 
     //! Generalized inversion used by specialized Modular.
+    //  uses extended_euclid, adding a zero division protection in DEBUG mode
     template<typename Storage_t>
-    inline Storage_t invext(const Storage_t a, const Storage_t b);
+      inline Storage_t& invext (Storage_t& x, Storage_t& d, const Storage_t a, const Storage_t b);
+
+    template<typename Storage_t>
+      inline Storage_t& invext(Storage_t& x, const Storage_t a, const Storage_t b);
+
+    template<typename Storage_t>
+      inline Storage_t invext(const Storage_t a, const Storage_t b);
 }
 
 #include "givaro/modular-general.inl"
+/* -*- mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

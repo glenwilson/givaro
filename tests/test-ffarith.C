@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-#include <givaro/givinteger.h>
+#include "test-fieldarith.h"
 #include <givaro/modular.h>
 #include <givaro/modular-balanced.h>
 #include <givaro/montgomery.h>
@@ -22,220 +22,6 @@
 
 using namespace Givaro;
 
-#define TESTE_EG( a, b )						\
-    if (!F.areEqual((a),(b))) {						\
-	F.write(F.write(std::cout,a) << "!=",b)				\
-	    << " failed (at line " <<  __LINE__ << ")" << std::endl;	\
-	return -1 ;							\
-    }
-
-#define JETESTE( a, seed )				\
-    if (TestField( (a), int(seed)) ) {			\
-	std::cout << #a << " failed !" << std::endl;	\
-	return -1 ;					\
-    }
-
-#define JEONETESTE( F, a )				\
-    if (TestOneField(F, (a))) {				\
-	std::cout << #a << " failed !" << std::endl;	\
-	return -1 ;					\
-    }
-    
-template<class Field>
-bool invertible(const Field& F, const typename Field::Element& a)
-{
-//     auto ai(a);
-//     return F.mulin(F.inv(ai, a), a) == F.one;
-    Integer ai;
-    F.convert(ai,a);
-    return (gcd(ai,Integer(F.characteristic()))==1);
-}
-
-template<class Field>
-int TestOneField(const Field& F, const typename Field::Element& first)
-{
-#ifdef GIVARO_DEBUG
-    F.write(std::cerr << "Testing ");
-    F.write(std::cerr<< "(", first) << ") :" << std::endl;
-#endif
-
-    typename Field::Element a, b, c, d,a_,b_,c_,d_,ma;
-    typename Field::Element e,e_;
-
-    F.init(a, 0);
-    TESTE_EG(a, F.zero);
-
-    F.init(a, 0u);
-    TESTE_EG(a, F.zero);
-    
-    F.init(a, 1);
-//         F.write(std::cerr) << std::endl;
-//         F.write(std::cerr << "a: ", a) << std::endl;
-//         F.write(std::cerr << "1: ", F.one) << std::endl;
-    TESTE_EG(a, F.one);
-    
-    F.init(a, 1u);
-    TESTE_EG(a, F.one);
-
-    F.inv(a_, a);
-    TESTE_EG(a_, F.one);
-
-    F.init(ma,1); F.negin(ma);
-//         F.write(std::cerr) << std::endl;
-//         F.write(std::cerr << "a: ", a) << std::endl;
-//         F.write(std::cerr << "ma: ", ma) << std::endl;
-//         F.write(std::cerr << "1: ", F.one) << std::endl;
-//         F.write(std::cerr << "-1: ", F.mOne) << std::endl;
-    TESTE_EG(ma, F.mOne);
-    
-    F.init(ma,1_i64); F.negin(ma);
-    TESTE_EG(ma, F.mOne);
-
-    F.inv(a_, ma);
-
-    TESTE_EG(a_, F.mOne);
-
-    F.assign(a, first);
-
-    typename Field::RandIter g(F);
-    while (!invertible(F, g.random(b))) {}
-
-    F.init(c);            // empty constructor
-    F.init(d);            // empty constructor
-
-    F.add(c, a, b);       // c = a+b
-    F.assign(c_,c);       // c_ <- c
-
-
-    TESTE_EG(c,c_);
-    F.subin(c_,a);
-//         F.write(std::cerr) << std::endl;
-//         F.write(std::cerr << "a:=", a) << ';' << std::endl;
-//         F.write(std::cerr << "b:=", b) << ';' << std::endl;
-//         F.write(std::cerr << "c:=", c) << ';' << std::endl;
-//         F.write(std::cerr << "c_:=", c_) << ';' << std::endl;
-
-    TESTE_EG(b,c_);
-
-    F.mul(c, a, b);     // c = a*b
-    F.assign(c_,c);       // c_ <- c
-    F.divin(c_,b);      // c_ == a ?
-
-//        F.write(std::cerr) << std::endl;
-//        F.write(std::cerr << "a: ", a) << std::endl;
-//        F.write(std::cerr << "b: ", b) << std::endl;
-//        F.write(std::cerr << "c: ", c) << std::endl;
-//        F.write(std::cerr << "c_: ", c_) << std::endl;
-    TESTE_EG(a,c_);
-
-    F.assign(c, a);
-    F.mulin(c, b);     // c = a*b
-    F.divin(c,b);      // c_ == a ?
-
-    //         F.write(std::cerr) << std::endl;
-    //         F.write(std::cerr << "a: ", a) << std::endl;
-    //         F.write(std::cerr << "b: ", b) << std::endl;
-    //         F.write(std::cerr << "c: ", c) << std::endl;
-    TESTE_EG(a,c);
-
-    F.axpy(d, a, b, c); // d = a*b + c;
-    F.init(d_);
-    F.axmy(d_,a,b,c); // d_ = a*b - c
-    F.addin(d_,c);
-    F.subin(d,c);
-
-    //         F.write(std::cerr) << std::endl;
-    //         F.write(std::cerr << "a:=", a) << ';' << std::endl;
-    //         F.write(std::cerr << "b:=", b) << ';' << std::endl;
-    //         F.write(std::cerr << "c:=", c) << ';' << std::endl;
-    //         F.write(std::cerr << "d:=", d) << ';' << std::endl;
-    //         F.write(std::cerr << "d_:=", d_) << ';' << std::endl;
-    TESTE_EG(d_,d);
-
-    F.sub(d,a,b); // d = a -b
-    F.add(c,a,b); // c = a+b
-    F.init(e);
-    F.init(e_);
-    F.mul(e,d,c); // e = d*c;
-    F.mul(a_,a,a); // a_ = a*a
-    F.mul(b_,b,b); // b_ = b*b
-    F.sub(e_,a_,b_); // e_ = a_ - b_
-
-    //         F.write(std::cerr) << std::endl;
-    //         F.write(std::cerr << "a:=", a) << ';' << std::endl;
-    //         F.write(std::cerr << "b:=", b) << ';' << std::endl;
-    //         F.write(std::cerr << "c:=", c) << ';' << std::endl;
-    //         F.write(std::cerr << "d:=", d) << ';' << std::endl;
-    //         F.write(std::cerr << "e:=", e) << ';' << std::endl;
-    //         F.write(std::cerr << "e_:=", e_) << ';' << std::endl;
-    //         F.write(std::cerr << "a_:=", a_) << ';' << std::endl;
-    //         F.write(std::cerr << "b_:=", b_) << ';' << std::endl;
-    TESTE_EG(e,e_); // a^2 - b^2 = (a-b)(a+b) ;)
-
-    // Four operations
-    F.init(a_);
-    F.assign(a_,a);
-    F.addin(a, b) ;
-    F.subin(a, b) ;
-    F.mulin(a, b) ;
-    F.divin(a, b) ;
-
-    TESTE_EG(a_,a);
-
-    F.maxpy(e, a, b, d); // e = d-a*b
-    F.assign(e_,d);
-    F.maxpyin(e_, a, b); // e = d - a*b;
-
-    //         F.write(std::cerr << "a:=", a) << ';' << std::endl;
-    //         F.write(std::cerr << "b:=", b) << ';' << std::endl;
-    //         F.write(std::cerr << "d:=", d) << ';' << std::endl;
-    //         F.write(std::cerr << "e:=", e) << ';' << std::endl;
-    //         F.write(std::cerr << "e_:=", e_) << ';' << std::endl;
-    TESTE_EG(e,e_);
-
-    F.axmy(e, a, b, d); // e = a*b -d;
-    F.assign(e_,d);
-    F.maxpyin(e_, a, b); // e = d - a*b;
-    F.negin(e_);
-
-    TESTE_EG(e,e_);
-
-#ifdef GIVARO_DEBUG
-    F.write(std::cerr );
-    std::cerr  << " done." << std::endl;
-#endif
-    return 0 ;
-
-}
-
-#ifndef NBITER
-#define NBITER 50
-#endif
-
-template<class Field>
-int TestField(const Field& F, const uint64_t seed)
-{
-    typename Field::Element x;
-    typename Field::RandIter g(F, 0, seed);
-    
-    F.init(x, 1);
-    JEONETESTE(F,x);
-    
-    for (size_t i = 0; i< NBITER; ++i) {
-        while (F.isZero(g.random(x))) {}
-        JEONETESTE(F,x);
-    }
-    
-    return 0;
-}
-
-template<class Ints>
-Ints previousprime(const Ints& a) {
-    static IntPrimeDom IPD;
-    Integer aI(a);
-    IPD.prevprimein(aI);
-    return (Ints)(aI);
-}
 
 int main(int argc, char ** argv)
 {
@@ -245,7 +31,7 @@ int main(int argc, char ** argv)
 #endif
     Integer::seeding((uint64_t)seed);
     RecInt::srand(seed);
-    
+
     using ModularCUS = Modular<int8_t, uint16_t>;
     using ModularSUZ = Modular<int16_t, uint32_t>;
     using ModularZULL = Modular<int32_t, uint64_t>;
@@ -254,13 +40,9 @@ int main(int argc, char ** argv)
     using ModularUZULL = Modular<uint32_t, uint64_t>;
     // using ModularFD = Modular<float, double>;
 
-#define TEST_SPECIFIC(Field, Name, Modulus...)		\
-    Field Name(Modulus);				\
-    JETESTE(Name, seed);
-
     //--------------------//
     //----- Modulo 2 -----//
-    
+
     TEST_SPECIFIC(Modular<int8_t>, C2, 2);
     TEST_SPECIFIC(Modular<int16_t>, S2, 2);
     TEST_SPECIFIC(Modular<int32_t>, Z2, 2);
@@ -286,18 +68,18 @@ int main(int argc, char ** argv)
 
     //--------------------//
     //----- Modulo 3 -----//
-    
+
     TEST_SPECIFIC(ModularBalanced<int32_t>, BZ3, 3);
     TEST_SPECIFIC(ModularBalanced<int64_t>, BLL3, 3);
     TEST_SPECIFIC(ModularBalanced<float>, BF3, 3);
     TEST_SPECIFIC(ModularBalanced<double>, BD3, 3);
-    
+
     TEST_SPECIFIC(Montgomery<int32_t>, MZ3, 3);
     TEST_SPECIFIC(Montgomery<RecInt::ruint128>, MRU3, 3);
 
     //---------------------//
     //----- Modulo 13 -----//
-    
+
     TEST_SPECIFIC(Modular<int8_t>, C13, 13);
     TEST_SPECIFIC(Modular<int16_t>, S13, 13);
     TEST_SPECIFIC(Modular<int32_t>, Z13, 13);
@@ -321,22 +103,18 @@ int main(int argc, char ** argv)
     TEST_SPECIFIC(Modular<RecInt::ruint128>, RU13, 13);
     typedef Modular<RecInt::ruint128,RecInt::ruint256> MUU;
     TEST_SPECIFIC(MUU, RUU13, 13);
-    
+
     TEST_SPECIFIC(ModularBalanced<int32_t>, BZ13, 13);
     TEST_SPECIFIC(ModularBalanced<int64_t>, BLL13, 13);
     TEST_SPECIFIC(ModularBalanced<float>, BF13, 13);
     TEST_SPECIFIC(ModularBalanced<double>, BD13, 13);
-    
+
     TEST_SPECIFIC(Montgomery<int32_t>, MZ13, 13);
     TEST_SPECIFIC(Montgomery<RecInt::ruint128>, MRU13, 13);
 
     //--------------------------------//
     //----- Modulo maximal prime -----//
 
-#define TEST_LAST_PRIME(Field, Name)			\
-    Field Name(previousprime(Field::maxCardinality()));	\
-    JETESTE(Name, seed);
-    
     TEST_LAST_PRIME(Modular<int8_t>, Cpmax);
     TEST_LAST_PRIME(Modular<int16_t>, Spmax);
     TEST_LAST_PRIME(Modular<int32_t>, Zpmax);
@@ -357,34 +135,34 @@ int main(int argc, char ** argv)
     //TEST_LAST_PRIME(ModularFD, FDpmax);
     TEST_LAST_PRIME(Modular<RecInt::rint128>, Rpmax);
     TEST_LAST_PRIME(Modular<RecInt::ruint128>, RUpmax);
-    
+
     TEST_LAST_PRIME(ModularBalanced<int32_t>, BZpmax);
     TEST_LAST_PRIME(ModularBalanced<int64_t>, BLLpmax);
     TEST_LAST_PRIME(ModularBalanced<float>, BFpmax);
     TEST_LAST_PRIME(ModularBalanced<double>, BDpmax);
-    
+
     TEST_LAST_PRIME(Montgomery<int32_t>, MZpmax);
     TEST_LAST_PRIME(Montgomery<RecInt::ruint128>, MRUpmax);
 
     //-------------------------//
     //----- Galois fields -----//
-    
+
     TEST_SPECIFIC(GFqDom<int32_t>, GF13, 13);
     TEST_SPECIFIC(GFqDom<int32_t>, GFpmax, 65521U);
     TEST_SPECIFIC(GFqDom<int64_t>, GFLLpmax, 4194301);
 
     // Zech log finite field with 256 elements
     // and prescribed 1 + x +x^3 +x^4 +x^8 irreducible polynomial
-//     std::vector< GFqDom<int64_t>::Residu_t > Irred(9);
-//     Irred[0] = 1; Irred[1] = 1; Irred[2] = 0; Irred[3] = 1;
-//     Irred[4] = 1; Irred[5] = 0; Irred[6] = 0; Irred[7] = 0;
-//     Irred[8] = 1;
+    //     std::vector< GFqDom<int64_t>::Residu_t > Irred(9);
+    //     Irred[0] = 1; Irred[1] = 1; Irred[2] = 0; Irred[3] = 1;
+    //     Irred[4] = 1; Irred[5] = 0; Irred[6] = 0; Irred[7] = 0;
+    //     Irred[8] = 1;
     std::vector< int64_t > Irred {1,1,0,1,1,0,0,0,1};
     TEST_SPECIFIC(GFqDom<int64_t>, GF256, 2, 8, Irred);
 
-   // Zech log finite field with 343 elements
-   // and prescribed 3 +x^3  irreducible polynomial
-   // and prescribed 5 +3x +4x^2 generator polynomial
+    // Zech log finite field with 343 elements
+    // and prescribed 3 +x^3  irreducible polynomial
+    // and prescribed 5 +3x +4x^2 generator polynomial
     std::vector< int64_t > Irred3 {3,0,0,1}, Gene3 {5,3,4};
     TEST_SPECIFIC(GFqDom<int64_t>, GF343, 7, 3, Irred3, Gene3);
 
@@ -401,3 +179,6 @@ int main(int argc, char ** argv)
     return 0;
 }
 
+
+/* -*- mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

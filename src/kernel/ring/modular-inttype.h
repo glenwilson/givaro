@@ -49,7 +49,7 @@ namespace Givaro
 
         // ----- Constructors
 
-        using Modular_implem<Storage_t, Compute_t, Residu_t>::Modular_implem; 
+        using Modular_implem<Storage_t, Compute_t, Residu_t>::Modular_implem;
         using Parent_t::_p;
         using Parent_t::_pc;
         using Parent_t::zero;
@@ -57,48 +57,48 @@ namespace Givaro
         using Parent_t::mOne;
 
         // ----- Initialisation
-        Element& init (Element& x) const override
-	{ return x = 0; }
-        Element& init (Element& x, const Integer& y) const override
-	{ x = y % _p; return reduce(x); }
+        Element& init (Element& x) const
+        { return x = 0; }
+        Element& init (Element& x, const Integer& y) const final
+        { x = y % _p; return reduce(x); }
         template<typename T> Element& init(Element& r, const T& a) const
         { r = Caster<Element>(a); return reduce(r); }
 
 
         Element& reduce (Element& x, const Element& y) const
-	{ x = y % _p; if (x < 0) x += _p; return x; }
+        { x = y % _p; if (x < 0) x += _p; return x; }
         Element& reduce (Element& x) const
-	{ x %= _p; if (x < 0) x += _p; return x; }
-        
-        // ----- Classic arithmetic
-        Element& mul(Element& r, const Element& a, const Element& b) const override;
-        Element& div(Element& r, const Element& a, const Element& b) const override;
-        Element& add(Element& r, const Element& a, const Element& b) const override;
-        Element& sub(Element& r, const Element& a, const Element& b) const override;
-        Element& neg(Element& r, const Element& a) const override;
-        Element& inv(Element& r, const Element& a) const override;
+        { x %= _p; if (x < 0) x += _p; return x; }
 
-        Element& mulin(Element& r, const Element& a) const override;
-        Element& divin(Element& r, const Element& a) const override;
-        Element& addin(Element& r, const Element& a) const override;
-        Element& subin(Element& r, const Element& a) const override;
-        Element& negin(Element& r) const override;
-        Element& invin(Element& r) const override;
-        
+        // ----- Classic arithmetic
+        Element& mul(Element& r, const Element& a, const Element& b) const;
+        Element& div(Element& r, const Element& a, const Element& b) const;
+        Element& add(Element& r, const Element& a, const Element& b) const;
+        Element& sub(Element& r, const Element& a, const Element& b) const;
+        Element& neg(Element& r, const Element& a) const;
+        Element& inv(Element& r, const Element& a) const;
+
+        Element& mulin(Element& r, const Element& a) const;
+        Element& divin(Element& r, const Element& a) const;
+        Element& addin(Element& r, const Element& a) const;
+        Element& subin(Element& r, const Element& a) const;
+        Element& negin(Element& r) const;
+        Element& invin(Element& r) const;
+
         // -- axpy:   r <- a * x + y
         // -- axpyin: r <- a * x + r
-        Element& axpy  (Element& r, const Element& a, const Element& x, const Element& y) const override;
-        Element& axpyin(Element& r, const Element& a, const Element& x) const override;
+        Element& axpy  (Element& r, const Element& a, const Element& x, const Element& y) const;
+        Element& axpyin(Element& r, const Element& a, const Element& x) const;
 
         // -- axmy:   r <- a * x - y
         // -- axmyin: r <- a * x - r
-        Element& axmy  (Element& r, const Element& a, const Element& x, const Element& y) const override;
-        Element& axmyin(Element& r, const Element& a, const Element& x) const override;
+        Element& axmy  (Element& r, const Element& a, const Element& x, const Element& y) const;
+        Element& axmyin(Element& r, const Element& a, const Element& x) const;
 
         // -- maxpy:   r <- y - a * x
         // -- maxpyin: r <- r - a * x
-        Element& maxpy  (Element& r, const Element& a, const Element& x, const Element& y) const override;
-        Element& maxpyin(Element& r, const Element& a, const Element& x) const override;
+        Element& maxpy  (Element& r, const Element& a, const Element& x, const Element& y) const;
+        Element& maxpyin(Element& r, const Element& a, const Element& x) const;
 
         // ----- Random generators
         typedef ModularRandIter<Self_t> RandIter;
@@ -106,15 +106,16 @@ namespace Givaro
         template< class Random > Element& random(Random& g, Element& r) const
         { return init(r, g()); }
         template< class Random > Element& nonzerorandom(Random& g, Element& a) const
-        { 
-          while (Self_t::isZero(init(a, g())));
-          return a; 
+        {
+            while (Self_t::isZero(init(a, g())));
+            return a;
         }
-        
+
     };
 }
 
 #include "givaro/modular-inttype.inl"
 
 #endif
-
+/* -*- mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s

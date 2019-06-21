@@ -5,7 +5,7 @@
 // and abiding by the rules of distribution of free software.
 // see the COPYRIGHT file for more details.
 // Authors: J.G. Dumas
-// Time-stamp: <27 Sep 16 17:21:35 Jean-Guillaume.Dumas@imag.fr>
+// Time-stamp: <15 Feb 19 13:40:54 Jean-Guillaume.Dumas@imag.fr>
 // ==========================================================================
 //
 //  Modified by Pascal Giorgi on 2002/02/13  (pascal.giorgi@ens-lyon.fr)
@@ -38,18 +38,21 @@ namespace Givaro
 
     template<>
     class Modular<Log16> //:
-        //public Modular_implem<int16_t, int16_t, uint16_t>
+    //public Modular_implem<int16_t, int16_t, uint16_t>
     {
     public:
         // ----- Exported Types and constantes
 
-	using Storage_t = int16_t;
-	using Compute_t = int16_t;
-	using Residu_t = uint16_t;
+        using Storage_t = int16_t;
+        using Compute_t = int16_t;
+        using Residu_t = uint16_t;
 
-	using Element = Storage_t;
-	using Self_t = Modular<Log16>;
-	using Parent_t = Modular_implem<Storage_t, Compute_t, Residu_t>;
+        using Element = Storage_t;
+        using Element_ptr = Element*;
+        using ConstElement = const Element;
+        using ConstElement_ptr = const Element*;
+        using Self_t = Modular<Log16>;
+        using Parent_t = Modular_implem<Storage_t, Compute_t, Residu_t>;
 
 
         enum { size_rep = sizeof(Residu_t) };      // - size of the storage type
@@ -72,8 +75,8 @@ namespace Givaro
         Residu_t residu() const;
         Residu_t size() const { return _p;}
 
-	inline Element minElement() const { return zero; }
-	inline Element maxElement() const { return mOne; }
+        inline Element minElement() const { return zero; }
+        inline Element maxElement() const { return mOne; }
 
         inline Residu_t characteristic() const { return _p; }
         inline Residu_t cardinality() const { return _p; }
@@ -113,8 +116,8 @@ namespace Givaro
         Rep& init( Rep& r, const int64_t a) const;
         Rep& init( Rep& a, const int32_t i) const ;
         Rep& init( Rep& r, const uint64_t a) const;
-        Rep& init( Rep& a, const uint32_t i) const ;
-        Rep& init( Rep& a, const Integer& i) const ;
+        Rep& init( Rep& a, const uint32_t i) const;
+        Rep& init( Rep& a, const Integer& i) const /* final */;
         Rep& init( Rep& a, const double i) const;
         Rep& init( Rep& a, const float i) const;
 
@@ -176,7 +179,7 @@ namespace Givaro
         { return init(r, g()); }
         template< class Random > Element& nonzerorandom(Random& g, Element& a) const
         { while (this->isZero(init(a, g())))
-                ;
+            ;
             return a; }
 
 
@@ -220,3 +223,5 @@ namespace Givaro
 
 #endif // __GIVARO_modular_log16_H
 
+/* -*- mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+// vim:sts=4:sw=4:ts=4:et:sr:cino=>s,f0,{0,g0,(0,\:0,t0,+0,=s
