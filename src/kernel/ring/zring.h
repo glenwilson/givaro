@@ -97,8 +97,8 @@ namespace Givaro
         Element &dxgcd(Element &g, Element &s, Element &t, Element &u, Element &v, const Element &a, const Element &b) const
         {
             gcd(g,s,t,a,b);
-            div(u,a,g);
-            div(v,b,g);
+            this->div(u,a,g);
+            this->div(v,b,g);
             return g;
         }
         Element& lcm (Element& c, const Element& a, const Element& b) const

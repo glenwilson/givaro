@@ -68,6 +68,8 @@ namespace Givaro {
 		// ----- Accessors
 		// ----- Access to the prime
 		inline Integer_t prime() const { return _p; }
+        Integer_t cardinality() const { return static_cast<Integer_t>(0); }
+        template<typename T> T& cardinality(T& c) const { return c = static_cast<T>(0); }
 
 
 		// ----- Checkers

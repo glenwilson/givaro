@@ -66,6 +66,7 @@ namespace Givaro
     Element& unit_factor (Element& u, const Element& a) const override;
     Element& uniformizer_factor (Element& q, const Element& a) const override;
     int64_t& valuation (int64_t& n, const Element& a) const override;
+    int64_t valuation (const Element& a) const;
     
     // ----- Classic arithmetic
     Element& mul(Element& r, const Element& a, const Element& b) const override;
@@ -81,6 +82,8 @@ namespace Givaro
     Element& subin(Element& r, const Element& a) const override;
     Element& negin(Element& r) const override;
     Element& invin(Element& r) const override;
+    Element& pow(Element& r, const int64_t& l) const;
+
     
     // -- axpy:   r <- a * x + y
     // -- axpyin: r <- a * x + r

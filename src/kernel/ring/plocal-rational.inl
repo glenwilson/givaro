@@ -1,4 +1,4 @@
-OB// ==========================================================================
+// ==========================================================================
 // $Source: /var/lib/cvs/Givaro/src/kernel/zpz/givzpzInt.inl,v $
 // Copyright(c)'1994-2009 by The Givaro group
 // This file is part of Givaro.
@@ -108,6 +108,13 @@ namespace Givaro {
     return r;
   }
 
+  typename PLocal<Rational, Integer>::Element&
+  PLocal<Rational, Integer>::pow (Element& r, const int64_t& l) const
+  {
+    r = Givaro::pow(r, l);
+    return r;
+  }
+  
   inline typename PLocal<Rational, Integer>::Element&
   PLocal<Rational, Integer>::axpy (Element& r, const Element& a, const Element& b, const Element& c) const
   {
@@ -178,6 +185,28 @@ namespace Givaro {
     return n;
   }
 
+  int64_t
+  PLocal<Rational, Integer>::valuation (const Element& a ) const 
+  {
+    int64_t n {};
+    if (this->isZero(a))
+      {
+	n = -1;
+      }
+    else
+      {
+	n = -1;
+	Integer_t q {a.nume()}, r {0};
+	while (r == 0)
+	  {
+	    Integer::divmod(q,r,q,this->prime());
+	    n += 1;
+	  }
+      }
+    return n;
+  }
+
+  
   typename PLocal<Rational, Integer>::Element&
   PLocal<Rational, Integer>::uniformizer_factor(Element& q, const Element& a) const
   {
