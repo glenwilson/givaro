@@ -59,7 +59,7 @@ namespace Givaro {
         return o;
 
 #else
-        return o << (mpz_srcptr)&gmp_rep;
+	return o << (mpz_srcptr)&gmp_rep;
 #endif
     }
 
@@ -131,7 +131,7 @@ namespace Givaro {
         return inp ;
 
 #else
-        return inp >> (mpz_ptr)a.get_mpz();
+	return inp >> (mpz_ptr)a.get_mpz();
 #endif
     }
 

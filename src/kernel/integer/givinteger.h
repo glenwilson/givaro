@@ -419,6 +419,7 @@ namespace Givaro {
         }
     };
 
+  
 } // Givaro
 
 #endif //__GIVARO_integer_H

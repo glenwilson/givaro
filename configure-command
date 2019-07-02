@@ -1,0 +1,6 @@
+./configure CC=/usr/local/bin/gcc-9 CXX=/usr/local/bin/g++-9 CXXFLAGS='-std=c++11 -nostdinc++ -nodefaultlibs -lc -isystem /usr/local/lib/gcc/9 -isystem /usr/lib -isystem /usr/local/lib -isystem /Library/Developer/CommandLineTools/usr/include/c++/v1 -lc++' --with-gmp=/usr/local
+
+
+//This one doesn't work... it ends up missing some basic definitions, likely due to the different c++ standard library used...
+
+./configure CC=/usr/local/bin/gcc-9 CXX=/usr/local/bin/g++-9 CXXFLAGS='-std=c++11 -nostdinc++ -nodefaultlibs -lc -isystem /usr/local/lib/gcc/9 -isystem /usr/lib -isystem /usr/local/lib -isystem /usr/local/include/c++/9.1.0 -isystem /usr/local/include/c++/9.1.0/x86_64-apple-darwin18 -lc++' --with-gmp=/usr/local
